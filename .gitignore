@@ -1,0 +1,4 @@
+node_modules/*
+StarboundAssets/*
+config.bat
+smtk.log
