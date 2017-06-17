@@ -51,7 +51,7 @@ if errorlevel 1 (
 	set iserror=1
 )
 for /f "tokens=*" %%i in (%templogfile%) do (
-	call tee.bat [patchbuilder]: %%i
+	call tee.bat : [patchbuilder] %%i
 )
 del %templogfile%
 

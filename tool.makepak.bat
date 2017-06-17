@@ -50,7 +50,9 @@ call "%sbtoolsdir%\asset_packer.exe" "%srcdir%" "%builddir%\%pakname%" > %templo
 if errorlevel 1 (
 	set iserror=1
 )
-for /f "tokens=*" %%i in (%templogfile%) do (call tee.bat [asset_packer]: %%i)
+for /f "tokens=*" %%i in (%templogfile%) do (
+	call tee.bat : [asset_packer] %%i
+)
 del %templogfile%
 
 if %iserror% EQU 1 (

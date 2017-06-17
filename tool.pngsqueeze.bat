@@ -51,7 +51,7 @@ if errorlevel 1 (
 	set iserror=1
 )
 for /f "tokens=*" %%i in (%templogfile%) do (
-	call tee.bat [pngsqueeze]: %%i
+	call tee.bat : [pngsqueeze] %%i
 )
 del %templogfile%
 

@@ -34,27 +34,32 @@ set dirname=%dirname:~0,-1%
 set argv=%*
 set iserror=0
 set moddir=!argv!
+set templogfile=
 pushd %dirname%
-
-REM // todo REMOVE!
-REM set moddir=%dirname%
-
-REM // todo: lots of comments and output
 
 call configure.bat %moddir%
 if errorlevel 1 (
 	goto :END
 )
 
+call tee.bat :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+call tee.bat ::
+call tee.bat :: Starbound Mod Toolkit
+call tee.bat ::
+call tee.bat :: SMTk v%smtkversion%
+call tee.bat ::
+call tee.bat :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+call tee.bat :
+
 if (%HAS_NODE%) EQU (0) (
 	call tee.bat : WARNING: node.exe not found on system.
-	call tee.bat : node-dependent utilities are disabled.
+	call tee.bat :   node-dependent utilities are disabled.
 )
 
 if (%HAS_NODE%) EQU (1) if not exist "%dirname%\node_modules\" (
 	call tee.bat : WARNING: node modules not installed - please cd into %dirname% and run "npm install".
-	call tee.bat :  - you may need to run "npm install --global --production windows-build-tools" as admin first.
-	call tee.bat : node-dependent utilities are disabled.
+	call tee.bat :   you may need to run "npm install --global --production windows-build-tools" as admin first.
+	call tee.bat :   node-dependent utilities are disabled.
 	set HAS_NODE=0
 )
 
@@ -63,9 +68,9 @@ REM // we need to see, also, if there's been any unpacked assets identified for 
 REM //   if not, tell the user to run tool.unpackassets.bat and wait
 if (%HAS_NODE%) EQU (1) if (%BUILD_USE_PATCHBUILDER%) EQU (1) if not exist "%sbassetsdir%\" (
 	call tee.bat : WARNING: no unpacked starbound assets found.
-	call tee.bat : please either set the path to your unpacked Starbound assets in your config file,
-	call tee.bat :   or run the file %dirname%\tool.unpackassets.bat
-	call tee.bat : the patchbuilder feature is disabled.
+	call tee.bat :   please either set the path to your unpacked Starbound assets in your config file,
+	call tee.bat :    or run the file %dirname%\tool.unpackassets.bat
+	call tee.bat :   the patchbuilder feature is disabled.
 )
 if (%HAS_NODE%) EQU (1) if (%BUILD_USE_PATCHBUILDER%) EQU (1) if exist "%sbassetsdir%\" (
 	call tool.patchbuilder.bat
@@ -101,17 +106,26 @@ REM // (move files around, move files out of the srcdir, etc.)
 REM // you can use a pre-pak hook.
 REM // this hook should be a bat file named "prepakhook.bat" and be located in the root directory 
 REM // for the mod.
+set templogfile=%dirname%\.temp.prepaklook.log
 if exist "%prepakhook%" if (%BUILD_USE_PREPAKHOOK%) EQU (1) (
-	call tee.bat found pre-pak hook, executing...
-	call "%prepakhook%"
+	call tee.bat : found pre-pak hook, executing...
+	call "%prepakhook%" > "%templogfile%"
 	REM // if the pre-pak hook returned a non-zero error code, explode
 	if errorlevel 1 (
-		call tee.bat pre-pak hook returned a failure code.
-		call tee.bat something might have went wrong.
 		set iserror=1
-		goto :END
 	)
-	call tee.bat pre-pak hook complete.
+	for /f "tokens=*" %%i in (%templogfile%) do (
+		call tee.bat : [prepakhook] %%i
+	)
+	del %templogfile%
+
+	if %iserror% EQU 1 (
+		call tee.bat : ERROR: pre-pak hook returned a failure code.
+		call tee.bat :   something might have went wrong.
+		goto :END
+	) else (
+		call tee.bat : pre-pak hook complete.
+	)
 )
 
 call tool.makepak.bat
@@ -127,16 +141,24 @@ REM // you can use a post-pak hook which will get passed the path to the built p
 REM // this hook should be a bat file named "postpakhook.bat" and be located in the root directory 
 REM // for the mod.
 if exist "%postpakhook%" if (%BUILD_USE_POSTPAKHOOK%) EQU (1) (
-	call tee.bat found post-pak hook, executing...
-	call "%postpakhook%" "%builddir%\%pakname%"
+	call tee.bat : found post-pak hook, executing...
+	call "%postpakhook%" "%builddir%\%pakname%" > "%templogfile%"
 	REM // if the post-pak hook returned a non-zero error code, explode
 	if errorlevel 1 (
-		call tee.bat post-pak hook returned a failure code.
-		call tee.bat something might have went wrong.
 		set iserror=1
-		goto :END
 	)
-	call tee.bat post-pak hook complete.
+	for /f "tokens=*" %%i in (%templogfile%) do (
+		call tee.bat : [postpakhook] %%i
+	)
+	del %templogfile%
+
+	if %iserror% EQU 1 (
+		call tee.bat : ERROR: post-pak hook returned a failure code.
+		call tee.bat :   something might have went wrong.
+		goto :END
+	) else (
+		call tee.bat : post-pak hook complete.
+	)
 )
 
 :END

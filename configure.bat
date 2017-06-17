@@ -33,6 +33,7 @@ set dirname=%~dp0
 set dirname=%dirname:~0,-1%
 set argv=%*
 set iserror=0
+set _smtkversion=1.0.0
 
 :TOOL_OPTIONS
 set _HAS_NODE=0
@@ -139,6 +140,7 @@ endlocal & (
 	set sbassetsdir=%_sbassetsdir%
 	set sbtoolsdir=%_sbtoolsdir%
 	set smtklog=%_moddir%\smtk.log
+	set smtkversion=%_smtkversion%
 
 	set HAS_NODE=%_HAS_NODE%
 	set BUILD_USE_PNGSQUEEZE=%_BUILD_USE_PNGSQUEEZE%
