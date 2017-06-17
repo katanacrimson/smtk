@@ -50,10 +50,10 @@ set templogfile=%dirname%\.temp.getsbtoolpath.log
 call %dirname%\getsbtoolpath.bat >"%templogfile%" 2>&1
 if errorlevel 1 (
 	for /f "tokens=*" %%i in (%templogfile%) do (
-		call tee.bat : [getsbtoolpath] %%i
+		echo : [getsbtoolpath] %%i
 	)
 	del "'%templogfile%"
-	call tee.bat : ERROR: Failed to get Starbound tools path.
+	echo : [tool] ERROR: Failed to get Starbound tools path.
 	set iserror=1
 	goto :END
 )
@@ -71,17 +71,16 @@ if errorlevel 1 (
 	set iserror=1
 )
 for /f "tokens=*" %%i in (%templogfile%) do (
-	call tee.bat : [asset_unpacker] %%i
+	echo : [asset_unpacker] %%i
 )
 del "%templogfile%"
 
 if %iserror% EQU 1 (
-	call tee.bat asset_unpacker.exe appears to have failed. exiting...
+	echo asset_unpacker.exe appears to have failed. exiting...
 	goto END
 ) else (
-	call tee.bat : unpacked assets available at: !targetdir!
+	echo : unpacked assets available at: !targetdir!
 )
-
 
 goto :END
 

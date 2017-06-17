@@ -102,7 +102,7 @@ if errorlevel 1 (
 		call tee.bat : [getsbtoolpath] %%i
 	)
 	del "%templogfile%"
-	call tee.bat : ERROR: Failed to get Starbound tools path.
+	call tee.bat : [configure] ERROR: Failed to get Starbound tools path.
 	set iserror=1
 	goto :END
 )
@@ -112,11 +112,11 @@ REM // done loading. throw vars over the fence
 goto :EXPORT
 
 :INIT_INSTALL
-echo no config.bat file was found in the mod directory - creating one...
+echo [configure] no config.bat file was found in the mod directory - creating one...
 REM // copy over the user-facing scripts
 @copy %dirname%\installables\config.example.bat %_moddir%\config.bat >nul 2>&1
 if errorlevel 1 (
-	echo unable to create config file in mod directory
+	echo [configure] unable to create config file in mod directory
 	set iserror=1
 	goto :END
 )
@@ -131,7 +131,7 @@ goto :PROMPT_USER_INSTALL
 
 :PROMPT_USER_INSTALL
 REM // check if things aren't set, and set them if we need to.
-echo please edit the config.bat file in your mod directory to configure the mod tools.
+echo [configure] please edit the config.bat file in your mod directory to configure the mod tools.
 echo exiting...
 set iserror=1
 goto :END

@@ -38,7 +38,7 @@ set templogfile=%dirname%\.temp.assetpacker.log
 pushd %dirname%
 
 if (%smtkloaded%) NEQ (1) if (%moddir%) EQU () (
-	echo tool.makepak.bat requires mod directory via argv if SMTk has not been already loaded. exiting...
+	echo [tool] tool.makepak.bat requires mod directory via argv if SMTk has not been already loaded. exiting...
 	set iserror=1
 	goto :END
 ) else if (%smtkloaded%) NEQ (1) (
@@ -51,7 +51,7 @@ if (%smtkloaded%) NEQ (1) if (%moddir%) EQU () (
 	)
 )
 
-call tee.bat : calling asset_packer.exe to build mod pak file...
+call tee.bat : [tool] calling asset_packer.exe to build mod pak file...
 call "%sbtoolsdir%\asset_packer.exe" "%srcdir%" "%builddir%\%pakname%" > "%templogfile%"
 if errorlevel 1 (
 	set iserror=1
@@ -62,10 +62,10 @@ for /f "tokens=*" %%i in (%templogfile%) do (
 del "%templogfile%"
 
 if %iserror% EQU 1 (
-	call tee.bat : asset_packer appears to have failed. exiting...
+	call tee.bat : [tool] asset_packer appears to have failed. exiting...
 	goto :END
 ) else (
-	call tee.bat : built pak available at: %builddir%\%pakname%
+	call tee.bat : [tool] built pak available at: %builddir%\%pakname%
 )
 
 goto :END

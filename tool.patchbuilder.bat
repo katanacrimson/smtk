@@ -38,7 +38,7 @@ set templogfile=%dirname%\.temp.patchbuilder.log
 pushd %dirname%
 
 if (%smtkloaded%) NEQ (1) if (%moddir%) EQU () (
-	echo tool.patchbuilder.bat requires mod directory via argv if SMTk has not been already loaded. exiting...
+	echo [tool] tool.patchbuilder.bat requires mod directory via argv if SMTk has not been already loaded. exiting...
 	set iserror=1
 	goto :END
 ) else if (%smtkloaded%) NEQ (1) (
@@ -52,14 +52,14 @@ if (%smtkloaded%) NEQ (1) if (%moddir%) EQU () (
 )
 
 if (%HAS_NODE%) NEQ (1) (
-	call tee.bat : ERROR: node modules not installed - please cd into %dirname% and run "npm install".
-	call tee.bat :   you may need to run "npm install --global --production windows-build-tools" as admin first.
-	call tee.bat : this node-dependent utility is currently disabled.
+	call tee.bat : [tool] ERROR: node modules not installed - please cd into %dirname% and run "npm install".
+	call tee.bat :          you may need to run "npm install --global --production windows-build-tools" as admin first.
+	call tee.bat :        this node-dependent utility is currently disabled.
 	set iserror=1
 	goto :END
 )
 
-call tee.bat : calling node.patchbuilder.js to build mod patch files...
+call tee.bat : [tool] calling node.patchbuilder.js to build mod patch files...
 node.exe %dirname%\node.patchbuilder.js > "%templogfile%" 2>&1
 if errorlevel 1 (
 	set iserror=1
@@ -70,10 +70,10 @@ for /f "tokens=*" %%i in (%templogfile%) do (
 del "%templogfile%"
 
 if %iserror% EQU 1 (
-	call tee.bat : node.patchbuilder.js appears to have failed. exiting...
+	call tee.bat : [tool] node.patchbuilder.js appears to have failed. exiting...
 	goto :END
 ) else (
-	call tee.bat : Patch files built successfully.
+	call tee.bat : [tool] Patch files built successfully.
 )
 
 goto :END

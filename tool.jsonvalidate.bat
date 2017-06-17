@@ -38,7 +38,7 @@ set templogfile=%dirname%\.temp.jsonvalidate.log
 pushd %dirname%
 
 if (%smtkloaded%) NEQ (1) if (%moddir%) EQU () (
-	echo tool.jsonvalidate.bat requires mod directory via argv if SMTk has not been already loaded. exiting...
+	echo [tool] tool.jsonvalidate.bat requires mod directory via argv if SMTk has not been already loaded. exiting...
 	set iserror=1
 	goto :END
 ) else if (%smtkloaded%) NEQ (1) (
@@ -52,14 +52,14 @@ if (%smtkloaded%) NEQ (1) if (%moddir%) EQU () (
 )
 
 if (%HAS_NODE%) NEQ (1) (
-	call tee.bat : ERROR: node modules not installed - please cd into %dirname% and run "npm install".
-	call tee.bat :   you may need to run "npm install --global --production windows-build-tools" as admin first.
-	call tee.bat : this node-dependent utility is currently disabled.
+	call tee.bat : [tool] ERROR: node modules not installed - please cd into %dirname% and run "npm install".
+	call tee.bat :          you may need to run "npm install --global --production windows-build-tools" as admin first.
+	call tee.bat :        this node-dependent utility is currently disabled.
 	set iserror=1
 	goto :END
 )
 
-call tee.bat : calling node.jsonvalidate.js to validate JSON files...
+call tee.bat : [tool] calling node.jsonvalidate.js to validate JSON files...
 node.exe %dirname%\node.jsonvalidate.js > "%templogfile%" 2>&1
 if errorlevel 1 (
 	set iserror=1
@@ -70,10 +70,10 @@ for /f "tokens=*" %%i in (%templogfile%) do (
 del "%templogfile%"
 
 if %iserror% EQU 1 (
-	call tee.bat : node.jsonvalidate.js appears to have failed. exiting...
+	call tee.bat : [tool] node.jsonvalidate.js appears to have failed. exiting...
 	goto :END
 ) else (
-	call tee.bat : JSON files validated successfully.
+	call tee.bat : [tool] JSON files validated successfully.
 )
 
 goto :END
