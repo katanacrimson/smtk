@@ -39,6 +39,8 @@ pushd %dirname%
 
 call configure.bat %moddir%
 if errorlevel 1 (
+	echo ERROR: Failed to init - configure.bat errored out.
+	set iserror=1
 	goto :END
 )
 
@@ -109,7 +111,7 @@ REM // for the mod.
 set templogfile=%dirname%\.temp.prepaklook.log
 if exist "%prepakhook%" if (%BUILD_USE_PREPAKHOOK%) EQU (1) (
 	call tee.bat : found pre-pak hook, executing...
-	call "%prepakhook%" > "%templogfile%"
+	call "%prepakhook%" > "%templogfile%" 2>&1
 	REM // if the pre-pak hook returned a non-zero error code, explode
 	if errorlevel 1 (
 		set iserror=1
@@ -117,7 +119,7 @@ if exist "%prepakhook%" if (%BUILD_USE_PREPAKHOOK%) EQU (1) (
 	for /f "tokens=*" %%i in (%templogfile%) do (
 		call tee.bat : [prepakhook] %%i
 	)
-	del %templogfile%
+	del "%templogfile%"
 
 	if %iserror% EQU 1 (
 		call tee.bat : ERROR: pre-pak hook returned a failure code.
@@ -142,7 +144,7 @@ REM // this hook should be a bat file named "postpakhook.bat" and be located in 
 REM // for the mod.
 if exist "%postpakhook%" if (%BUILD_USE_POSTPAKHOOK%) EQU (1) (
 	call tee.bat : found post-pak hook, executing...
-	call "%postpakhook%" "%builddir%\%pakname%" > "%templogfile%"
+	call "%postpakhook%" "%builddir%\%pakname%" > "%templogfile%" 2>&1
 	REM // if the post-pak hook returned a non-zero error code, explode
 	if errorlevel 1 (
 		set iserror=1
@@ -150,7 +152,7 @@ if exist "%postpakhook%" if (%BUILD_USE_POSTPAKHOOK%) EQU (1) (
 	for /f "tokens=*" %%i in (%templogfile%) do (
 		call tee.bat : [postpakhook] %%i
 	)
-	del %templogfile%
+	del "%templogfile%"
 
 	if %iserror% EQU 1 (
 		call tee.bat : ERROR: post-pak hook returned a failure code.

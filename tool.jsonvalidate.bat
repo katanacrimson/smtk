@@ -43,17 +43,30 @@ if (%smtkloaded%) NEQ (1) if (%moddir%) EQU () (
 	goto :END
 ) else if (%smtkloaded%) NEQ (1) (
 	call configure.bat !argv!
+	if errorlevel 1 (
+		echo ERROR: Failed to init - configure.bat errored out.
+		set iserror=1
+		goto :END
+	)
+)
+
+if (%HAS_NODE%) NEQ (1) (
+	call tee.bat : ERROR: node modules not installed - please cd into %dirname% and run "npm install".
+	call tee.bat :   you may need to run "npm install --global --production windows-build-tools" as admin first.
+	call tee.bat : this node-dependent utility is currently disabled.
+	set iserror=1
+	goto :END
 )
 
 call tee.bat : calling node.jsonvalidate.js to validate JSON files...
-node.exe %dirname%\node.jsonvalidate.js > "%templogfile%"
+node.exe %dirname%\node.jsonvalidate.js > "%templogfile%" 2>&1
 if errorlevel 1 (
 	set iserror=1
 )
 for /f "tokens=*" %%i in (%templogfile%) do (
 	call tee.bat : [jsonvalidate] %%i
 )
-del %templogfile%
+del "%templogfile%"
 
 if %iserror% EQU 1 (
 	call tee.bat : node.jsonvalidate.js appears to have failed. exiting...

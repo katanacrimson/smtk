@@ -43,17 +43,22 @@ if (%smtkloaded%) NEQ (1) if (%moddir%) EQU () (
 	goto :END
 ) else if (%smtkloaded%) NEQ (1) (
 	call configure.bat !argv!
+	if errorlevel 1 (
+		echo ERROR: Failed to init - configure.bat errored out.
+		set iserror=1
+		goto :END
+	)
 )
 
 call tee.bat : calling asset_packer.exe to build mod pak file...
-call "%sbtoolsdir%\asset_packer.exe" "%srcdir%" "%builddir%\%pakname%" > %templogfile%
+call "%sbtoolsdir%\asset_packer.exe" "%srcdir%" "%builddir%\%pakname%" > "%templogfile%"
 if errorlevel 1 (
 	set iserror=1
 )
 for /f "tokens=*" %%i in (%templogfile%) do (
 	call tee.bat : [asset_packer] %%i
 )
-del %templogfile%
+del "%templogfile%"
 
 if %iserror% EQU 1 (
 	call tee.bat : asset_packer appears to have failed. exiting...

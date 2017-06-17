@@ -34,7 +34,7 @@ set dirname=%dirname:~0,-1%
 set argv=%*
 set iserror=0
 set targetdir=!argv!
-set templogfile=%dirname%\.temp.assetpacker.log
+set templogfile=
 set temp=
 pushd %dirname%
 
@@ -46,21 +46,42 @@ if (%targetdir%) EQU () (
 )
 
 REM // get the path to the Starbound tools we need
-call %dirname%\getsbtoolpath.bat >nul
+set templogfile=%dirname%\.temp.getsbtoolpath.log
+call %dirname%\getsbtoolpath.bat >"%templogfile%" 2>&1
+if errorlevel 1 (
+	for /f "tokens=*" %%i in (%templogfile%) do (
+		call tee.bat : [getsbtoolpath] %%i
+	)
+	del "'%templogfile%"
+	call tee.bat : ERROR: Failed to get Starbound tools path.
+	set iserror=1
+	goto :END
+)
+del "%templogfile%"
+
+set templogfile=%dirname%\.temp.assetunpacker.log
 
 for %%F in ("%_sbtoolsdir%") do set temp=%%~dpF
 set assetfile=!temp:~0,-1!\assets\packed.pak
 
 echo calling asset_unpacker.exe to unpack the Starbound assets file.
 echo please wait - this usually takes a while...
-call "%_sbtoolsdir%\asset_unpacker.exe" !assetfile! !targetdir!
-
+call "%_sbtoolsdir%\asset_unpacker.exe" !assetfile! !targetdir! > "%templogfile%" 2>&1
 if errorlevel 1 (
-	call tee.bat asset_unpacker.exe appears to have failed. exiting...
 	set iserror=1
-	goto END
 )
-call tee.bat : unpacked assets available at: !targetdir!
+for /f "tokens=*" %%i in (%templogfile%) do (
+	call tee.bat : [asset_unpacker] %%i
+)
+del "%templogfile%"
+
+if %iserror% EQU 1 (
+	call tee.bat asset_unpacker.exe appears to have failed. exiting...
+	goto END
+) else (
+	call tee.bat : unpacked assets available at: !targetdir!
+)
+
 
 goto :END
 

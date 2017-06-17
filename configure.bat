@@ -33,6 +33,7 @@ set dirname=%~dp0
 set dirname=%dirname:~0,-1%
 set argv=%*
 set iserror=0
+set smtklog=%_moddir%\smtk.log
 set _smtkversion=1.0.0
 
 :TOOL_OPTIONS
@@ -86,7 +87,7 @@ if (%_BUILD_USE_POSTPAKHOOK%) EQU () (
 )
 set _prepakhook=%_moddir%\prepakhook.bat
 set _postpakhook=%_moddir%\postpakhook.bat
-@where node.exe 1>nul 2>nul
+@where node.exe 1>nul 2>&1
 if errorlevel 1 (
 	set _HAS_NODE=0
 ) else (
@@ -94,7 +95,18 @@ if errorlevel 1 (
 )
 
 REM // get the path to the Starbound tools we need
-call %dirname%\getsbtoolpath.bat >nul
+set templogfile=%dirname%\.temp.getsbtoolpath.log
+call %dirname%\getsbtoolpath.bat >"%templogfile%" 2>&1
+if errorlevel 1 (
+	for /f "tokens=*" %%i in (%templogfile%) do (
+		call tee.bat : [getsbtoolpath] %%i
+	)
+	del "%templogfile%"
+	call tee.bat : ERROR: Failed to get Starbound tools path.
+	set iserror=1
+	goto :END
+)
+del %templogfile%
 
 REM // done loading. throw vars over the fence
 goto :EXPORT
@@ -102,17 +114,17 @@ goto :EXPORT
 :INIT_INSTALL
 echo no config.bat file was found in the mod directory - creating one...
 REM // copy over the user-facing scripts
-@copy %dirname%\installables\config.example.bat %_moddir%\config.bat >nul 2>nul
+@copy %dirname%\installables\config.example.bat %_moddir%\config.bat >nul 2>&1
 if errorlevel 1 (
 	echo unable to create config file in mod directory
 	set iserror=1
 	goto :END
 )
 
-@copy %dirname%\installables\make.bat %_moddir%\make.bat >nul 2>nul
-@copy %dirname%\installables\jsonvalidate.bat %_moddir%\jsonvalidate.bat >nul 2>nul
-@copy %dirname%\installables\patchbuilder.bat %_moddir%\patchbuilder.bat >nul 2>nul
-@copy %dirname%\installables\pngsqueeze.bat %_moddir%\pngsqueeze.bat >nul 2>nul
+@copy %dirname%\installables\make.bat %_moddir%\make.bat >nul 2>&1
+@copy %dirname%\installables\jsonvalidate.bat %_moddir%\jsonvalidate.bat >nul 2>&1
+@copy %dirname%\installables\patchbuilder.bat %_moddir%\patchbuilder.bat >nul 2>&1
+@copy %dirname%\installables\pngsqueeze.bat %_moddir%\pngsqueeze.bat >nul 2>&1
 @echo set smtkpath=%dirname% > %_moddir%\_smtkpath.bat 2>nul
 
 goto :PROMPT_USER_INSTALL
