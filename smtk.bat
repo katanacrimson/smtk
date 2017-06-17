@@ -39,7 +39,8 @@ pushd %dirname%
 
 call configure.bat %moddir%
 if errorlevel 1 (
-	echo ERROR: Failed to init - configure.bat errored out.
+	REM echo ERROR: Failed to init - configure.bat errored out.
+	REM // this seems to barf if configure.bat doesn't find a config file on install...commented for now.
 	set iserror=1
 	goto :END
 )
