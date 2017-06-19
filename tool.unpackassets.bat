@@ -86,4 +86,5 @@ goto :END
 
 :END
 popd
+pause
 exit /b %iserror%
