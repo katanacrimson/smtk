@@ -37,6 +37,12 @@ set moddir=!argv!
 set templogfile=
 pushd %dirname%
 
+if (%moddir%) EQU () (
+	echo : [core] ERROR: no moddir specified. exiting...
+	set iserror=1
+	goto :END
+)
+
 call configure.bat %moddir%
 if errorlevel 1 (
 	REM echo ERROR: Failed to init - configure.bat errored out.
