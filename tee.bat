@@ -26,8 +26,13 @@ REM OTHER DEALINGS IN THE SOFTWARE.
 
 setlocal enabledelayedexpansion enableextensions 
 
-SET argv=%*
-for /f "delims=" %%A in ('gettimezone') do set timezone=%%A
+:BASE_CONFIG
+REM // DO. NOT. MODIFY. THESE.
+REM // SERIOUSLY.  HERE BE DRAGONS.
+set dirname=%~dp0
+set dirname=%dirname:~0,-1%
+set argv=%*
+for /f "delims=" %%A in ('%dirname%\gettimezone.bat') do set timezone=%%A
 
 if (%smtklog%) EQU () (
 	set smtklog=smtk.log
