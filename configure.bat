@@ -160,9 +160,11 @@ endlocal & (
 	set BUILD_USE_PATCHBUILDER=%_BUILD_USE_PATCHBUILDER%
 	set BUILD_USE_PREPAKHOOK=%_BUILD_USE_PREPAKHOOK%
 	set BUILD_USE_POSTPAKHOOK=%_BUILD_USE_POSTPAKHOOK%
+
+	set _iserror=%iserror%
 )
 
 goto :END
 
 :END
-exit /b %iserror%
+exit /b %_iserror%
