@@ -9,8 +9,6 @@ SMTk is a collection of tools to assist with building mods quickly and effective
 
 SMTk is currently only available for Windows. A comparable script may be written for Linux at some point in the future (obviously not in batch).
 
-SMTk is licensed under the MIT license.  A copy of the license is also embedded into the buildpak.bat file header comments.
-
 ## Installation
 
 *Please note that the following directions are Windows-specific and may need to be adapted to suit your environment.*
