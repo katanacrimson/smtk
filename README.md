@@ -61,30 +61,59 @@ With that, you should have a pak file created in the build/ directory!
 
 Those who have Starbound installed via the Humble Store copy will have to set the STARBOUND_PATH env variable or add their Starbound copy's installation location to the system PATH, as there is no viable way to automatically locate Starbound for Humble Store installations - it just can't be done.
 
-Just set the STARBOUND_PATH environment variable to the root directory of your Starbound installation and you're good to go.
+Just set the STARBOUND_PATH environment variable to the *root directory of your Starbound installation* and you're good to go.
 
 ## What else can I do? (Advanced use)
 
-todo
+### On-demand / On-build patch file generation
+
+To build patch files for your mod automatically, all you'll need to do is unpack the Starbound Assets, take a copy of the files you need to patch, then place a copy in your modified/ directory (with the appropriate filepath to match the original file's location) and modify it accordingly.  The tool "sb-buildpatches" will run, compare the modified copy to the original (unpacked) copy, and generate the JSON patch file for you and place it in the src/ directory.
+
+To leverage this functionality, you need to follow the steps outlined in the section "Installing the advanced SMTk tools *(optional)*" above, and then:
+
+* Open a command prompt window as admin
+* cd into the directory of your SMTk checkout (like `cd D:\code\starbound\smtk\` on my system)
+* run the command `tool.unpackassets.bat` and wait for its completion (it should be unpacking the Starbound packed.pak file)
+
+If you want your patch files rebuild every time you run make.bat, then you'll need to do the following:
+
+* open the config.bat file for your Starbound mod in your preferred code editor
+* change the line `set BUILD_USE_PATCHBUILDER=0` to `set BUILD_USE_PATCHBUILDER=1`
+
+***Please note: an invalid JSON file in the modified/ directory will cause the patchbuilder to fail and block the build.***
+
+If you don't want your patch files rebuilt every time you run make.bat, you can rebuild them on demand by running the "patchbuilder.bat" script in your mod's directory.
+
+### On-demand / On-build check for invalid JSON files
+
+![image](https://i.imgur.com/WvhZWip.png)
+
+To help detect fatal mod errors *before* loading your mod up in Starbound, you can have SMTk check for syntax errors in JSON-like files during the build process.
+
+To leverage this functionality, you need to follow the steps outlined in the section "Installing the advanced SMTk tools *(optional)*" above.
+
+If you want JSON files checked every time you run make.bat, then you'll need to do the following:
+
+* open the config.bat file for your Starbound mod in your preferred code editor
+* change the line `set BUILD_USE_JSONVALIDATE=0` to `set BUILD_USE_JSONVALIDATE=1`
+
+***Please note: an invalid JSON file in the src/ directory will cause the jsonvalidator to fail and block the build.***
+
+If you don't want your JSON files checked every time you run make.bat, you can validate them on demand by running the "jsonvalidate.bat" script in your mod's directory.
+
+### On-demand / On-build PNG asset compression
+
+To help shrink mods down in size, you can have SMTk also crush PNG assets down in size using the wonderful [sharp](http://sharp.dimens.io/en/stable/) library.
+
+To leverage this functionality, you need to follow the steps outlined in the section "Installing the advanced SMTk tools *(optional)*" above.
+
+If you want PNG assets compressed every time you run make.bat, then you'll need to do the following:
+
+* open the config.bat file for your Starbound mod in your preferred code editor
+* change the line `set BUILD_USE_PNGSQUEEZE=0` to `set BUILD_USE_PNGSQUEEZE=1`
+
+If you don't want your PNG assets compressed every time you run make.bat, you can compress them on demand by running the "pngsqueeze.bat" script in your mod's directory.
 
 ## License
 
-Copyright 2017 Damian Bushong <katana@odios.us>
-
-Permission is hereby granted, free of charge, to any person obtaining a 
-copy of this software and associated documentation files (the "Software"), 
-to deal in the Software without restriction, including without limitation 
-the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-and/or sell copies of the Software, and to permit persons to whom the 
-Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included 
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
-OTHER DEALINGS IN THE SOFTWARE.
+MIT license; see ./LICENSE for fulltext.
